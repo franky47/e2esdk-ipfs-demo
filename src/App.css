@@ -12,3 +12,16 @@
 .read-the-docs {
   color: #888;
 }
+
+section.drop-zone {
+  width: 100%;
+  border-radius: 5px;
+  padding: 10px;
+  text-align: center;
+  background: #363636;
+  height: 150px;
+}
+
+section.drop-zone:dragover {
+  background:red
+}

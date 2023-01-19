@@ -24,7 +24,7 @@ interface IpfsResponse {
  *
  */
 
-export default function useIpfs(
+export function useIpfs(
   ipfs: IPFS,
   cmd: string,
   opts: Record<string, any> = {}

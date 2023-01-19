@@ -21,6 +21,7 @@ const ipfsConfig: Options = {
   //   /*pubsub: true*/
   // },
   libp2p: {
+    // https://github.com/ChainSafe/js-libp2p-gossipsub
     pubsub: gossipsub({ allowPublishToZeroPeers: true, emitSelf: true }),
   },
 
@@ -83,9 +84,7 @@ type IpfsFactoryProps = {
  * so use-ipfs calls can grab it from there rather than expecting
  * it to be passed in.
  */
-export default function useIpfsFactory(
-  opts: IpfsFactoryProps
-): IpfsFactoryResult {
+export function useIpfsFactory(opts: IpfsFactoryProps): IpfsFactoryResult {
   const [ipfs, setIpfs] = useState<IPFS | null>(null);
   // const [ipfsInitError, setIpfsInitError] = useState<null | string>(null);
 
