@@ -1,43 +1,66 @@
-import { create, IPFS } from "ipfs-core";
+import { create, IPFS, Options } from "ipfs-core";
+import { gossipsub } from "@chainsafe/libp2p-gossipsub";
+
 //import { IPFSConfig } from "ipfs-core/dist/src/components/network";
 import { useEffect, useState } from "react";
 
-const ipfsConfig = {
-  //start: true,
+const ipfsConfig: Options = {
+  start: true,
   // relay: {
   //   enabled: false, // enable relay dialer/listener (STOP)
   //   hop: {
   //     enabled: false, // make this node a relay (HOP)
   //   },
   // },
-  // preload: {
-  //   enabled: true,
-  // },
-  repo: "test-e2esdk",
+  relay: { enabled: false, hop: { enabled: false, active: false } },
+  preload: {
+    enabled: false,
+  },
+  repo: "./something",
   // EXPERIMENTAL: {
   //   /*pubsub: true*/
   // },
-  // libp2p: {
-  //   //   config: {
-  //   // dht: {
-  //   //   enabled: true,
-  //   // },
-  //   // },
-  // },
+  libp2p: {
+    pubsub: gossipsub(),
+  },
+
   config: {
-    Addresses: {
-      Swarm: [
-        // "/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
-        // "/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
-        //"/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
-        //"/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
-        //`/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star`,
-        //"/dns4/libp2p-rdv.vps.revolunet.com/tcp/443/wss/p2p-webrtc-star",
-      ],
-    },
     // Bootstrap: [
+    //   //"/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd",
+    //   // "/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3",
+    //   // "/dns4/sfo-3.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLPppuBtQSGwKDZT2M73ULpjvfd3aZ6ha4oFGL1KrGM",
+    //   // "/dns4/sgp-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLSafTMBsPKadTEgaXctDQVcqN88CNLHXMkTNwMKPnu",
+    //   // "/dns4/nyc-1.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLueR4xBeUbY9WZ9xGUUxunbKWcrNFTDAadQJmocnWm",
+    //   // "/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64",
     //   //"/dns4/ipfs-ws.vps.revolunet.com/tcp/443/wss/ipfs/QmSEbJSiV8TXyaG9oBJRs2sJ5sttrNQJvbSeGe7Vt8ZBqt",
     // ],
+    // Addresses: {
+    //   Swarm: [
+    //     "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+    //     "/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+    //     "/dns4/webrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star/",
+    //     //"/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star",
+    //     // "/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star",
+    //     // "/dns4/libp2p-rdv.vps.revolunet.com/tcp/443/wss/p2p-webrtc-star",
+    //     //const addr = multiaddr('/ip4/188.166.203.82/tcp/20000/wss/p2p-webrtc-star/p2p/QmcgpsyWgH8Y8ajJz1Cu72KnS5uo2Aa2LpzU7kinSooo2a')
+    //     //"/dns4/ipfs-ws.vps.revolunet.com/tcp/443/wss/ipfs/QmSEbJSiV8TXyaG9oBJRs2sJ5sttrNQJvbSeGe7Vt8ZBqt",
+    //     //"/dns4/ws-star1.par.dwebops.pub/tcp/443/wss/p2p-websocket-star",
+    //   ],
+    //},
+    Addresses: {
+      Swarm: [
+        "/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+        "/dns6/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+        "/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star/",
+        "/dns4/webrtc-star.discovery.libp2p.io/tcp/443/wss/p2p-webrtc-star/",
+      ],
+    },
+    Bootstrap: [
+      "/dns4/star.desend.ml/tcp/443/wss/p2p/12D3KooWRkt9teYUZTwSFVq11ZB55LWF1knJgnE15imVnxBDopAy",
+      "/dns4/star.desend.ml/tcp/443/wss/p2p/12D3KooWRkt9teYUZTwSFVq11ZB55LWF1knJgnE15imVnxBDopAy",
+      "/dns6/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt",
+      "/dns4/ipfs.thedisco.zone/tcp/4430/wss/p2p/12D3KooWChhhfGdB9GJy1GbhghAAKCUR99oCymMEVS4eUcEy67nt",
+    ],
   },
 };
 //let ipfs: IPFS | null = null;
@@ -45,7 +68,6 @@ const ipfsConfig = {
 type IpfsFactoryResult = {
   ipfs: IPFS | null;
   isIpfsReady: boolean;
-  ipfsInitError: string | null;
 };
 
 type IpfsFactoryProps = {
@@ -65,7 +87,7 @@ export default function useIpfsFactory(
   opts: IpfsFactoryProps
 ): IpfsFactoryResult {
   const [ipfs, setIpfs] = useState<IPFS | null>(null);
-  const [ipfsInitError, setIpfsInitError] = useState<null | string>(null);
+  // const [ipfsInitError, setIpfsInitError] = useState<null | string>(null);
 
   useEffect(() => {
     if (!ipfs) {
@@ -92,18 +114,21 @@ export default function useIpfsFactory(
         if (!ipfs) {
           console.info("Create IPFS Node");
           const newIpfs = await create(ipfsConfig);
+          //window.ipfs = newIpfs;
+          //newIpfs.files.stat()
+          //newIpfs.get("bla", { preload: true });
           setIpfs(newIpfs);
         }
       } catch (error) {
         console.error("IPFS init error:", error);
-        setIpfs(null);
+        //setIpfs(null);
         //@ts-ignore
-        setIpfsInitError(error);
+        //setIpfsInitError(error);
       }
     }
   }
 
   const isIpfsReady = Boolean(ipfs);
 
-  return { ipfs, isIpfsReady, ipfsInitError };
+  return { ipfs, isIpfsReady };
 }

@@ -17,13 +17,14 @@ async function loadImgURL(
   ipfs: IPFS,
   cid: string,
   mime: string,
-  limit = 1000000
+  limit = 1000000000
 ) {
   if (cid == "" || cid == null || cid == undefined) {
     return;
   }
   const content = [];
   for await (const chunk of ipfs.cat(cid, { length: limit })) {
+    console.log("loading image", cid);
     content.push(chunk);
   }
   return URL.createObjectURL(new Blob(content, { type: mime }));
@@ -33,10 +34,13 @@ function IpfsImage({ ipfs, cid }: { ipfs: IPFS; cid: string }) {
   const [data, setData] = useState<string | null>(null);
   useEffect(() => {
     // get ipfs data
+    let loaded = false;
     async function loadImage() {
+      console.log("loadImage", cid);
       try {
         const imageData = await loadImgURL(ipfs, cid, "image/jpeg");
         if (imageData) {
+          console.log("loadedImage", cid);
           setData(imageData);
         }
       } catch (e) {
@@ -44,7 +48,8 @@ function IpfsImage({ ipfs, cid }: { ipfs: IPFS; cid: string }) {
         console.log("error loading image", cid, e.message);
       }
     }
-    if (ipfs) {
+    if (ipfs && !loaded) {
+      loaded = true;
       loadImage();
     }
   }, [ipfs, cid]);
@@ -144,7 +149,7 @@ interface VersionResult {
 }
 
 function Sample() {
-  const { ipfs, ipfsInitError } = useIpfsFactory({ commands: ["id"] });
+  const { ipfs } = useIpfsFactory({ commands: ["id"] });
   //@ts-ignore
   const res = useIpfs(ipfs, "id");
   const [version, setVersion] = useState<null | VersionResult>(null);
@@ -195,11 +200,13 @@ function Sample() {
 
   const cids = [
     "QmTqKgsMYMJo3yev7JDGwh7gXhMtxjcuV4499LxseVDujX",
-    "Qmdy5LaAL4eghxE7JD6Ah5o4PJGarjAV9st8az2k52i1vq",
+    "QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ",
   ];
 
+  //ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ
+
   //console.log({ id, version });
-  return (
+  https: return (
     (ipfs && (
       <div>
         <p className="read-the-docs">
