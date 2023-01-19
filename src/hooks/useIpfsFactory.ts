@@ -1,6 +1,45 @@
 import { create, IPFS } from "ipfs-core";
+//import { IPFSConfig } from "ipfs-core/dist/src/components/network";
 import { useEffect, useState } from "react";
 
+const ipfsConfig = {
+  //start: true,
+  // relay: {
+  //   enabled: false, // enable relay dialer/listener (STOP)
+  //   hop: {
+  //     enabled: false, // make this node a relay (HOP)
+  //   },
+  // },
+  // preload: {
+  //   enabled: true,
+  // },
+  repo: "test-e2esdk",
+  // EXPERIMENTAL: {
+  //   /*pubsub: true*/
+  // },
+  // libp2p: {
+  //   //   config: {
+  //   // dht: {
+  //   //   enabled: true,
+  //   // },
+  //   // },
+  // },
+  config: {
+    Addresses: {
+      Swarm: [
+        // "/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
+        // "/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
+        //"/dns4/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
+        //"/dns6/star.thedisco.zone/tcp/9090/wss/p2p-webrtc-star",
+        //`/dns4/star-signal.cloud.ipfs.team/tcp/443/wss/p2p-webrtc-star`,
+        //"/dns4/libp2p-rdv.vps.revolunet.com/tcp/443/wss/p2p-webrtc-star",
+      ],
+    },
+    // Bootstrap: [
+    //   //"/dns4/ipfs-ws.vps.revolunet.com/tcp/443/wss/ipfs/QmSEbJSiV8TXyaG9oBJRs2sJ5sttrNQJvbSeGe7Vt8ZBqt",
+    // ],
+  },
+};
 //let ipfs: IPFS | null = null;
 
 type IpfsFactoryResult = {
@@ -52,7 +91,7 @@ export default function useIpfsFactory(
       try {
         if (!ipfs) {
           console.info("Create IPFS Node");
-          const newIpfs = await create();
+          const newIpfs = await create(ipfsConfig);
           setIpfs(newIpfs);
         }
       } catch (error) {
