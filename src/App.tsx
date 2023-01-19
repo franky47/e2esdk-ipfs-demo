@@ -1,11 +1,53 @@
 import { IPFS } from "ipfs-core";
 import { InputFile } from "ipfs-core-types/src/utils";
 import { EventHandler, useEffect, useState } from "react";
-
+import Dropzone, { DropzoneInputProps, DropzoneOptions } from "react-dropzone";
 import "./App.css";
 import useIpfs from "./hooks/useIpfs";
 import useIpfsFactory from "./hooks/useIpfsFactory";
 
+import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
+import { toString as uint8ArrayToString } from "uint8arrays/to-string";
+
+function usePubSub(ipfs: IPFS | null, topic: string) {
+  const [messages, setMessages] = useState<string[]>([]);
+  //const topic = "chat-gossip";
+  //ipfs.config.get("")
+  //ipfs.pubsub
+  useEffect(() => {
+    if (ipfs) {
+      console.log("subscribe");
+      ipfs.pubsub.subscribe(topic, (evt) => {
+        console.log(
+          `node1 received: ${uint8ArrayToString(evt.data)} on topic ${
+            evt.topic
+          }`
+        );
+        setMessages([...messages, uint8ArrayToString(evt.data)]);
+      });
+      return () => {
+        ipfs.pubsub.unsubscribe(topic);
+        console.log("unsubscribe");
+      };
+    }
+  }, [ipfs, topic, messages, setMessages]);
+
+  // node.pubsub.addEventListener("message", (evt) => {
+  //   console.log(
+  //     `node1 received: ${uint8ArrayToString(evt.detail.data)} on topic ${
+  //       evt.detail.topic
+  //     }`
+  //   );
+  // });
+  // Publish a new message each second
+  // setInterval(async () => {
+  //   await node.pubsub.publish(
+  //     topic,
+  //     uint8ArrayFromString("Bird bird bird, bird is the word!")
+  //   );
+  // }, 5000);
+  return messages;
+}
 /** Uses `URL.createObjectURL` free returned ObjectURL with `URL.RevokeObjectURL` when done with it.
  *
  * @param {string} cid CID you want to retrieve
@@ -153,6 +195,8 @@ function Sample() {
   //@ts-ignore
   const res = useIpfs(ipfs, "id");
   const [version, setVersion] = useState<null | VersionResult>(null);
+  const messages = usePubSub(ipfs, "test-messages");
+
   const id = res && res.id.toString();
   useEffect(() => {
     if (!ipfs) return;
@@ -165,14 +209,9 @@ function Sample() {
     }
   }, [ipfs]);
 
-  const captureFile = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
+  const PUBSUB_TOPIC = "test-messages";
 
-    saveToIpfs(event.target.files);
-  };
-
-  const saveToIpfs = async ([file]) => {
+  const saveToIpfs = async (file: File) => {
     if (!ipfs) {
       return;
     }
@@ -191,6 +230,7 @@ function Sample() {
 
       //setFileHash(added.cid.toString());
       console.log(added.cid.toString());
+      return added.cid.toString();
     } catch (err) {
       // setError(err.message);
       //@ts-ignore
@@ -198,31 +238,53 @@ function Sample() {
     }
   };
 
-  const cids = [
-    "QmTqKgsMYMJo3yev7JDGwh7gXhMtxjcuV4499LxseVDujX",
-    "QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ",
-  ];
+  const onDrop: DropzoneOptions["onDrop"] = async (acceptedFiles) => {
+    console.log("onDrop", onDrop);
+    acceptedFiles.forEach(async (file) => {
+      const cid = await saveToIpfs(file);
+      console.log("file", file, cid);
+      if (ipfs && cid) {
+        console.log("pubsub.publish", cid);
+        ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(cid));
+      }
+    });
+  };
+  //console.log(acceptedFiles);
 
   //ipfs.io/ipfs/QmRRPWG96cmgTn2qSzjwr2qvfNEuhunv6FNeMFGa9bx6mQ
 
   //console.log({ id, version });
-  https: return (
+  return (
     (ipfs && (
       <div>
         <p className="read-the-docs">
           IPFS v{version?.version} #{id}
         </p>
-        <input
-          id="input-file"
-          name="input-file"
-          type="file"
-          onChange={captureFile}
-        />
-        <label htmlFor="input-file">Input File</label>
-        <br />
+        <Dropzone onDrop={onDrop}>
+          {({ getRootProps, getInputProps }) => (
+            <section
+              style={{
+                width: "100%",
+                borderRadius: 5,
+                padding: 10,
+                textAlign: "center",
+                background: "#363636",
+                height: 150,
+              }}
+            >
+              <br />
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <p>Drag 'n' drop some files here, or click to select files</p>
+              </div>
+            </section>
+          )}
+        </Dropzone>
         <br />
         {ipfs &&
-          cids.map((cid) => <IpfsImage key={cid} ipfs={ipfs} cid={cid} />)}
+          messages.map((message) => (
+            <IpfsImage key={message} ipfs={ipfs} cid={message} />
+          ))}
       </div>
     )) || <div>Connecting to IPFS...</div>
   );

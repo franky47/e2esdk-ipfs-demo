@@ -21,7 +21,7 @@ const ipfsConfig: Options = {
   //   /*pubsub: true*/
   // },
   libp2p: {
-    pubsub: gossipsub(),
+    pubsub: gossipsub({ allowPublishToZeroPeers: true, emitSelf: true }),
   },
 
   config: {
