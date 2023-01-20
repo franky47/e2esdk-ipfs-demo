@@ -984,6 +984,39 @@
   resolved "https://registry.yarnpkg.com/@protobufjs/utf8/-/utf8-1.1.0.tgz#a777360b5b39a1a2e5106f8e858f2fd2d060c570"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
+"@socialgouv/e2esdk-api@^1.0.0-beta.9":
+  version "1.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-api/-/e2esdk-api-1.0.0-beta.9.tgz#83ae4503638e20186f45f9869852a629db882135"
+  integrity sha512-3oNIWwgAqV9OPFOnUXD2MhrIrCr9hBhEjTKP5h3u71LbwSrCuDxU/kinKZm7+L73WLuyjptP0A2+FzRozIBnPA==
+  dependencies:
+    zod "^3.20.2"
+
+"@socialgouv/e2esdk-client@^1.0.0-beta.17":
+  version "1.0.0-beta.17"
+  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-client/-/e2esdk-client-1.0.0-beta.17.tgz#ad911c40f34be26b287514e3237a07f81d10635c"
+  integrity sha512-jTdY9v55OtIO2g5AX+A7tmfP3xtHqqXhAQ4djyBEB90QkORmNcJLhcZwT9joL5jNVdX0nasDR0PUyhyDkMA4MA==
+  dependencies:
+    "@socialgouv/e2esdk-api" "^1.0.0-beta.9"
+    "@socialgouv/e2esdk-crypto" "^1.0.0-beta.12"
+    local-state-sync "1.0.0-beta.6"
+    mitt "^3.0.0"
+    zod "^3.20.2"
+
+"@socialgouv/e2esdk-crypto@^1.0.0-beta.12":
+  version "1.0.0-beta.12"
+  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-crypto/-/e2esdk-crypto-1.0.0-beta.12.tgz#a271a9e71952011af81adafb3430e1b00bc03ff9"
+  integrity sha512-IchVgyvbSoOVyPyU3DQ7kq7bRkf3NC9U/Ube8B5SedXpZ/5avw2+AXzl/Pk80Ib/k1PiF4S7lnAhb+oOGcKLuw==
+  dependencies:
+    "@socialgouv/e2esdk-api" "^1.0.0-beta.9"
+    "@stablelib/hex" "^1.0.1"
+    libsodium-wrappers "^0.7.10"
+    zod "^3.20.2"
+
+"@socialgouv/e2esdk-react@^1.0.0-beta.17":
+  version "1.0.0-beta.17"
+  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-react/-/e2esdk-react-1.0.0-beta.17.tgz#760738101ad6a24bc562dd50d006989d0e2317bc"
+  integrity sha512-lZV1bhZOSvFpc5uSTajCAUDvr+5AdbYHoDWGKCBpkMUUq/aR+N69ezO/L4ODdEUK/EE8NBf9+TU+x/m910/ogg==
+
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
@@ -1035,6 +1068,11 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@stablelib/hash/-/hash-1.0.1.tgz#3c944403ff2239fad8ebb9015e33e98444058bc5"
   integrity sha512-eTPJc/stDkdtOcrNMZ6mcMK1e6yBbqRBaNW55XA1jU8w/7QdnCF0CmMmOD1m7VSkBR44PWrMHU2l6r8YEQHMgg==
+
+"@stablelib/hex@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/hex/-/hex-1.0.1.tgz#564bd46d896941c93131d1e1869eabc17cf9bab5"
+  integrity sha512-PQOEChVBjhYGgAD+ehO2ow1gSj1slre3jW4oMD4kV8VrhYhzmtsQDWDZej3BQO8qkVezdczDvISxVSF24PuYNA==
 
 "@stablelib/hkdf@^1.0.1":
   version "1.0.1"
@@ -2576,6 +2614,23 @@ libp2p@^0.42.0:
     wherearewe "^2.0.0"
     xsalsa20 "^1.1.0"
 
+libsodium-wrappers@^0.7.10:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/libsodium-wrappers/-/libsodium-wrappers-0.7.10.tgz#13ced44cacb0fc44d6ac9ce67d725956089ce733"
+  integrity sha512-pO3F1Q9NPLB/MWIhehim42b/Fwb30JNScCNh8TcQ/kIc+qGLQch8ag8wb0keK3EP5kbGakk1H8Wwo7v+36rNQg==
+  dependencies:
+    libsodium "^0.7.0"
+
+libsodium@^0.7.0:
+  version "0.7.10"
+  resolved "https://registry.yarnpkg.com/libsodium/-/libsodium-0.7.10.tgz#c2429a7e4c0836f879d701fec2c8a208af024159"
+  integrity sha512-eY+z7hDrDKxkAK+QKZVNv92A5KYkxfvIshtBJkmg5TSiCnYqZP3i9OO9whE79Pwgm4jGaoHgkM4ao/b9Cyu4zQ==
+
+local-state-sync@1.0.0-beta.6:
+  version "1.0.0-beta.6"
+  resolved "https://registry.yarnpkg.com/local-state-sync/-/local-state-sync-1.0.0-beta.6.tgz#5d6ca93ac31e840c8e1fa2426eb9b2d9a637b400"
+  integrity sha512-RZlgjAph/Ytjl2ldAzC0KHMYeo9sVWzdGuCij3UyW1w6GR9FZpnZ6E9hUDdDjizo6j9mH+aI+Zvavp2vK98xvA==
+
 lodash@^4.17.4:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -2634,6 +2689,11 @@ minimist@^1.2.5:
   version "1.2.7"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
   integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
+
+mitt@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/mitt/-/mitt-3.0.0.tgz#69ef9bd5c80ff6f57473e8d89326d01c414be0bd"
+  integrity sha512-7dX2/10ITVyqh4aOSVI9gdape+t9l2/8QxHrFmUXu4EEUpdlxl6RudZUPZoc+zuY2hk1j7XxVroIVIan/pD/SQ==
 
 mkdirp@^1.0.4:
   version "1.0.4"
@@ -3379,3 +3439,8 @@ yocto-queue@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
+
+zod@^3.20.2:
+  version "3.20.2"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.2.tgz#068606642c8f51b3333981f91c0a8ab37dfc2807"
+  integrity sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==

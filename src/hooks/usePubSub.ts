@@ -6,6 +6,7 @@ export function usePubSub(ipfs: IPFS | null, topic: string) {
   const [messages, setMessages] = useState<string[]>([]);
   useEffect(() => {
     if (ipfs) {
+      console.info(`pubsub.subscribe ${topic}`);
       ipfs.pubsub.subscribe(topic, (evt) => {
         console.info(
           `pubsub.received: ${uint8ArrayToString(evt.data)} on topic ${
@@ -15,8 +16,8 @@ export function usePubSub(ipfs: IPFS | null, topic: string) {
         setMessages([...messages, uint8ArrayToString(evt.data)]);
       });
       return () => {
+        console.info(`pubsub.unsubscribe ${topic}`);
         ipfs.pubsub.unsubscribe(topic);
-        console.log("unsubscribe");
       };
     }
   }, [ipfs, topic, messages, setMessages]);

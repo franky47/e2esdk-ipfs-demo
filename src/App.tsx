@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import Dropzone, { DropzoneOptions } from "react-dropzone";
 import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 
+import type { ClientConfig } from "@socialgouv/e2esdk-client";
+import { Client } from "@socialgouv/e2esdk-client";
+import { E2ESDKClientProvider } from "@socialgouv/e2esdk-react";
+
 import { useIpfs } from "./hooks/useIpfs";
 import { useIpfsFactory } from "./hooks/useIpfsFactory";
 import { usePubSub } from "./hooks/usePubSub";
@@ -76,10 +80,6 @@ function Sample() {
     });
   };
 
-  const acceptStyle = {
-    borderColor: "#00e676",
-  };
-
   return (
     (ipfs && (
       <div>
@@ -107,11 +107,46 @@ function Sample() {
   );
 }
 
+//const useClient = () => {
+//const [ready, setReady] = useState(false);
+const serverURL = "https://e2esdk.dev.fabrique.social.gouv.fr";
+const serverPublicKey = "_XDQj6-paJAnpCp_pfBhGUUe6cA0MjLXsgAOgYDhCRI";
+const mainKeyStr = "Yl62MSH6Gke5So1aPKhtWidL5WcMUh8tLlNW1pU_oeg";
+const userId = "ffee47af-2edc-479f-8a1e-47544f243085";
+const client = new Client({
+  serverURL: serverURL,
+  serverPublicKey: serverPublicKey,
+  handleNotifications: true,
+});
+const mainKey = client.decode(mainKeyStr);
+await client.sodium.ready;
+
+//client.login(userId, mainKey);
+
+client
+  .signup(userId, mainKey)
+  .catch((e) => {
+    console.log(e.message);
+    if (e.message === "This account was already registered") {
+      return client.login(userId, mainKey);
+    }
+    throw e;
+  })
+  .then(() => {
+    client.sodium.memzero(mainKey);
+    // setReady(true);
+  });
+//  return { client, ready };
+//};
+
 function App() {
+  //const { client, ready } = useClient();
   return (
     <div className="App">
       <h1>e2esdk + IPFS demo</h1>
-      <Sample />
+      <E2ESDKClientProvider client={client}>
+        <Sample />
+      </E2ESDKClientProvider>
     </div>
   );
 }

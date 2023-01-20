@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@chainsafe/libp2p-gossipsub": "^6.0.0",
+    "@socialgouv/e2esdk-client": "^1.0.0-beta.17",
+    "@socialgouv/e2esdk-react": "^1.0.0-beta.17",
     "dot-prop": "^7.2.0",
     "ipfs-core": "^0.18.0",
     "react": "^18.2.0",
