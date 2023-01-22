@@ -5,7 +5,7 @@ import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 export function usePubSub(ipfs: IPFS | null, topic: string) {
   const [messages, setMessages] = useState<string[]>([]);
   useEffect(() => {
-    if (ipfs) {
+    if (ipfs && ipfs.isOnline() && messages.length === 0) {
       console.info(`pubsub.subscribe ${topic}`);
       ipfs.pubsub.subscribe(topic, (evt) => {
         console.info(
@@ -15,11 +15,14 @@ export function usePubSub(ipfs: IPFS | null, topic: string) {
         );
         setMessages([...messages, uint8ArrayToString(evt.data)]);
       });
-      return () => {
+    }
+
+    return () => {
+      if (ipfs) {
         console.info(`pubsub.unsubscribe ${topic}`);
         ipfs.pubsub.unsubscribe(topic);
-      };
-    }
+      }
+    };
   }, [ipfs, topic, messages, setMessages]);
 
   return messages;

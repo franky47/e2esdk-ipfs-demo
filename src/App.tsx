@@ -1,51 +1,21 @@
-import { useState, useEffect } from "react";
 import Dropzone, { DropzoneOptions } from "react-dropzone";
 import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 
-import type { ClientConfig } from "@socialgouv/e2esdk-client";
 import { Client } from "@socialgouv/e2esdk-client";
 import { E2ESDKClientProvider } from "@socialgouv/e2esdk-react";
 
-import { useIpfs } from "./hooks/useIpfs";
-import { useIpfsFactory } from "./hooks/useIpfsFactory";
 import { usePubSub } from "./hooks/usePubSub";
 import { IpfsImage } from "./components/IpfsImage";
+import { IpfsProvider } from "./components/IpfsProvider";
 
 import "./App.css";
+import { useIpfs } from "./hooks/useIpfs";
 
-// todo: use export from  ifs-core-types/src/root
-interface VersionResult {
-  version: string;
-  commit?: string;
-  repo?: string;
-  system?: string;
-  golang?: string;
-  "ipfs-core"?: string;
-  "interface-ipfs-core"?: string;
-  "ipfs-http-client"?: string;
-}
+const PUBSUB_TOPIC = "test-messages";
 
-function Sample() {
-  const { ipfs } = useIpfsFactory({ commands: ["id"] });
-  //@ts-ignore
-  const res = useIpfs(ipfs, "id");
-  const [version, setVersion] = useState<null | VersionResult>(null);
-  const messages = usePubSub(ipfs, "test-messages");
-
-  const id = res && res.id.toString();
-
-  useEffect(() => {
-    if (!ipfs) return;
-    const getVersion = async () => {
-      const nodeId = await ipfs.version();
-      setVersion(nodeId);
-    };
-    if (!version) {
-      getVersion();
-    }
-  }, [ipfs]);
-
-  const PUBSUB_TOPIC = "test-messages";
+function Sample2({}) {
+  const ipfs = useIpfs();
+  const messages = usePubSub(ipfs, PUBSUB_TOPIC);
 
   const saveToIpfs = async (file: File) => {
     if (!ipfs) {
@@ -81,11 +51,9 @@ function Sample() {
   };
 
   return (
-    (ipfs && (
+    <div>
       <div>
-        <p className="read-the-docs">
-          IPFS v{version?.version} #{id}
-        </p>
+        <p className="read-the-docs">IPFS vxxx #yyyy</p>
         <Dropzone onDrop={onDrop}>
           {({ getRootProps, getInputProps }) => (
             <section className="drop-zone">
@@ -103,12 +71,9 @@ function Sample() {
             <IpfsImage key={message} ipfs={ipfs} cid={message} />
           ))}
       </div>
-    )) || <div>Connecting to IPFS...</div>
+    </div>
   );
 }
-
-//const useClient = () => {
-//const [ready, setReady] = useState(false);
 const serverURL = "https://e2esdk.dev.fabrique.social.gouv.fr";
 const serverPublicKey = "_XDQj6-paJAnpCp_pfBhGUUe6cA0MjLXsgAOgYDhCRI";
 const mainKeyStr = "Yl62MSH6Gke5So1aPKhtWidL5WcMUh8tLlNW1pU_oeg";
@@ -121,8 +86,6 @@ const client = new Client({
 const mainKey = client.decode(mainKeyStr);
 await client.sodium.ready;
 
-//client.login(userId, mainKey);
-
 client
   .signup(userId, mainKey)
   .catch((e) => {
@@ -134,18 +97,16 @@ client
   })
   .then(() => {
     client.sodium.memzero(mainKey);
-    // setReady(true);
   });
-//  return { client, ready };
-//};
 
 function App() {
-  //const { client, ready } = useClient();
   return (
     <div className="App">
       <h1>e2esdk + IPFS demo</h1>
       <E2ESDKClientProvider client={client}>
-        <Sample />
+        <IpfsProvider>
+          <Sample2 />
+        </IpfsProvider>
       </E2ESDKClientProvider>
     </div>
   );
