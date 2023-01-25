@@ -11,7 +11,25 @@ import { IpfsProvider } from "./components/IpfsProvider";
 
 import "./App.css";
 import { useIpfs } from "./hooks/useIpfs";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+
+import { client } from "./e2esdk-client";
+
+import "@socialgouv/e2esdk-devtools";
+import { E2ESDKDevtoolsElement } from "@socialgouv/e2esdk-devtools";
+import { useE2ESDKClient } from "@socialgouv/e2esdk-react";
+
+export const Devtools = () => {
+  const client = useE2ESDKClient();
+  const ref = useRef<E2ESDKDevtoolsElement>(null);
+  useEffect(() => {
+    if (!ref.current) {
+      return;
+    }
+    ref.current.client = client;
+  }, [client]);
+  return <e2esdk-devtools ref={ref} theme="dark" />;
+};
 
 const PUBSUB_TOPIC = "test-messages";
 
@@ -64,11 +82,30 @@ function Sample2({}) {
 
   const send = () => {
     console.log("send", text);
+    //const nameFingerprint
+    const label = "my-ipfs-workspace";
+    const key = client.findKeyByLabel(label);
+    ///console.log("keys", keys);
+    const encrypted = client.encrypt(text, key?.nameFingerprint);
+    console.log("encrypted", encrypted);
     if (ipfs) {
-      ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(text));
+      ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(encrypted));
       setText("");
     }
   };
+
+  const decryptedMessages = messages.map((msg) => {
+    const label = "my-ipfs-workspace";
+    try {
+      const key = client.findKeyByLabel(label);
+      console.log("key", key);
+      const decrypted = client.decrypt(msg, key?.nameFingerprint);
+      return decrypted;
+    } catch (e) {
+      console.error(e);
+      return msg;
+    }
+  });
 
   return (
     <div>
@@ -98,36 +135,15 @@ function Sample2({}) {
         <br />
         <br />
         <div style={{ fontSize: "1.5em" }}>
-          {ipfs && messages.map((message, i) => <li key={i}>{message}</li>)}
+          {ipfs &&
+            decryptedMessages.map((message, i) => <li key={i}>{message}</li>)}
         </div>
+        <br />
+        <br />
       </div>
     </div>
   );
 }
-const serverURL = "https://e2esdk.dev.fabrique.social.gouv.fr";
-const serverPublicKey = "_XDQj6-paJAnpCp_pfBhGUUe6cA0MjLXsgAOgYDhCRI";
-const mainKeyStr = "Yl62MSH6Gke5So1aPKhtWidL5WcMUh8tLlNW1pU_oeg";
-const userId = "ffee47af-2edc-479f-8a1e-47544f243085";
-const client = new Client({
-  serverURL: serverURL,
-  serverPublicKey: serverPublicKey,
-  handleNotifications: true,
-});
-const mainKey = client.decode(mainKeyStr);
-await client.sodium.ready;
-
-client
-  .signup(userId, mainKey)
-  .catch((e) => {
-    console.log(e.message);
-    if (e.message === "This account was already registered") {
-      return client.login(userId, mainKey);
-    }
-    throw e;
-  })
-  .then(() => {
-    client.sodium.memzero(mainKey);
-  });
 
 function App() {
   return (
@@ -137,6 +153,7 @@ function App() {
         <IpfsProvider>
           <Sample2 />
         </IpfsProvider>
+        <Devtools />
       </E2ESDKClientProvider>
     </div>
   );
