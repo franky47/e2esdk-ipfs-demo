@@ -11,18 +11,20 @@ export function usePubSub(ipfs: IPFS | null, topic: string) {
         console.info(
           `pubsub.received: ${uint8ArrayToString(evt.data)} on topic ${
             evt.topic
-          }`
+          }`,
+          "messages",
+          messages
         );
         setMessages([...messages, uint8ArrayToString(evt.data)]);
       });
     }
 
-    return () => {
-      if (ipfs) {
-        console.info(`pubsub.unsubscribe ${topic}`);
-        ipfs.pubsub.unsubscribe(topic);
-      }
-    };
+    // return () => {
+    //   if (ipfs) {
+    //     console.info(`pubsub.unsubscribe ${topic}`);
+    //     ipfs.pubsub.unsubscribe(topic);
+    //   }
+    // };
   }, [ipfs, topic, messages, setMessages]);
 
   return messages;

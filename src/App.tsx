@@ -1,5 +1,6 @@
 import Dropzone, { DropzoneOptions } from "react-dropzone";
 import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
+import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 
 import { Client } from "@socialgouv/e2esdk-client";
 import { E2ESDKClientProvider } from "@socialgouv/e2esdk-react";
@@ -10,13 +11,15 @@ import { IpfsProvider } from "./components/IpfsProvider";
 
 import "./App.css";
 import { useIpfs } from "./hooks/useIpfs";
+import { useState } from "react";
 
 const PUBSUB_TOPIC = "test-messages";
 
 function Sample2({}) {
   const ipfs = useIpfs();
-  const messages = usePubSub(ipfs, PUBSUB_TOPIC);
-
+  //const messages = usePubSub(ipfs, PUBSUB_TOPIC);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [text, setText] = useState("");
   const saveToIpfs = async (file: File) => {
     if (!ipfs) {
       return;
@@ -40,6 +43,15 @@ function Sample2({}) {
     }
   };
 
+  if (ipfs) {
+    ipfs.pubsub.subscribe(PUBSUB_TOPIC, (evt) => {
+      console.info(
+        `pubsub.received: ${uint8ArrayToString(evt.data)} on topic ${evt.topic}`
+      );
+      setMessages([...messages, uint8ArrayToString(evt.data)]);
+    });
+  }
+
   const onDrop: DropzoneOptions["onDrop"] = async (acceptedFiles) => {
     acceptedFiles.forEach(async (file) => {
       const cid = await saveToIpfs(file);
@@ -48,6 +60,14 @@ function Sample2({}) {
         ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(cid));
       }
     });
+  };
+
+  const send = () => {
+    console.log("send", text);
+    if (ipfs) {
+      ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(text));
+      setText("");
+    }
   };
 
   return (
@@ -66,10 +86,20 @@ function Sample2({}) {
           )}
         </Dropzone>
         <br />
-        {ipfs &&
-          messages.map((message) => (
-            <IpfsImage key={message} ipfs={ipfs} cid={message} />
-          ))}
+        <br />
+        <textarea
+          onChange={(e) => setText(e.currentTarget.value)}
+          style={{ width: 500, height: 100 }}
+          value={text}
+        ></textarea>
+        <br />
+        <button onClick={send}>Send</button>
+        <br />
+        <br />
+        <br />
+        <div style={{ fontSize: "1.5em" }}>
+          {ipfs && messages.map((message, i) => <li key={i}>{message}</li>)}
+        </div>
       </div>
     </div>
   );
