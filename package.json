@@ -12,6 +12,7 @@
     "@chainsafe/libp2p-gossipsub": "^6.0.0",
     "@socialgouv/e2esdk-client": "^1.0.0-beta.17",
     "@socialgouv/e2esdk-devtools": "^1.0.0-beta.1",
+    "@socialgouv/e2esdk-keygen": "1.0.0-beta.12",
     "@socialgouv/e2esdk-react": "^1.0.0-beta.17",
     "dot-prop": "^7.2.0",
     "ipfs-core": "^0.18.0",

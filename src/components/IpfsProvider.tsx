@@ -68,9 +68,10 @@ export function IpfsProvider({ config, ...props }: IpfsProviderProps) {
       }
     };
   }, [config]);
-  return client !== null ? (
+  return <Provider value={client} {...props} />;
+  /*return client !== null ? (
     <Provider value={client} {...props} />
   ) : (
     <div>Loading IPFS...</div>
-  );
+  );*/
 }

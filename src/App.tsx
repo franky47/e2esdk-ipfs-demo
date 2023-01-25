@@ -11,7 +11,8 @@ import { IpfsProvider } from "./components/IpfsProvider";
 
 import "./App.css";
 import { useIpfs } from "./hooks/useIpfs";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import { ipfsContext } from "./ipfsContext";
 
 import { client } from "./e2esdk-client";
 
@@ -33,12 +34,40 @@ export const Devtools = () => {
 
 const PUBSUB_TOPIC = "test-messages";
 
+const IpfsStatus = () => {
+  const ipfs = useContext(ipfsContext);
+  return (
+    <div>
+      IPFS ready :{" "}
+      {ipfs?.isOnline() ? (
+        <span
+          style={{
+            display: "inline-block",
+            width: 10,
+            height: 10,
+            background: "green",
+          }}
+        />
+      ) : (
+        <span
+          style={{
+            display: "inline-block",
+            width: 10,
+            height: 10,
+            background: "red",
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
 function Sample2({}) {
-  const ipfs = useIpfs();
-  //const messages = usePubSub(ipfs, PUBSUB_TOPIC);
-  const [messages, setMessages] = useState<string[]>([]);
+  const ipfs = useContext(ipfsContext);
+  const [messages, setMessages] = useState<string[] | null>(null);
   const [text, setText] = useState("");
-  const saveToIpfs = async (file: File) => {
+
+  const saveFileToIpfs = async (file: File) => {
     if (!ipfs) {
       return;
     }
@@ -61,56 +90,93 @@ function Sample2({}) {
     }
   };
 
-  if (ipfs) {
-    ipfs.pubsub.subscribe(PUBSUB_TOPIC, (evt) => {
-      console.info(
-        `pubsub.received: ${uint8ArrayToString(evt.data)} on topic ${evt.topic}`
-      );
-      setMessages([...messages, uint8ArrayToString(evt.data)]);
-    });
-  }
+  const onMessage = (data: any) => {
+    const newText = uint8ArrayToString(data);
+    console.info(
+      `pubsub.received: ${newText} on topic ${PUBSUB_TOPIC}`,
+      messages && messages.length
+    );
+    setMessages([...(messages || []), newText]);
+  };
+
+  useEffect(
+    function () {
+      if (ipfs && !messages) {
+        console.log("subscribe", PUBSUB_TOPIC);
+        ipfs.pubsub.subscribe(PUBSUB_TOPIC, (evt) => onMessage(evt.data));
+        setMessages([]);
+      }
+      return () => {};
+      /*
+    const init = async () => {
+      if (ipfs) {
+        await ipfs.pubsub.subscribe(PUBSUB_TOPIC, onMessage);
+      }
+    };
+    if (ipfs && messages.length === 0) {
+      console.log("subscribe", PUBSUB_TOPIC);
+      init();
+    }
+    */
+    },
+    [ipfs, messages]
+  );
 
   const onDrop: DropzoneOptions["onDrop"] = async (acceptedFiles) => {
     acceptedFiles.forEach(async (file) => {
-      const cid = await saveToIpfs(file);
+      const cid = await saveFileToIpfs(file);
       if (ipfs && cid) {
         console.info("pubsub.publish", cid);
-        ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(cid));
+        ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString("cid:" + cid));
       }
     });
   };
 
   const send = () => {
-    console.log("send", text);
     //const nameFingerprint
-    const label = "my-ipfs-workspace";
-    const key = client.findKeyByLabel(label);
-    ///console.log("keys", keys);
-    const encrypted = client.encrypt(text, key?.nameFingerprint);
-    console.log("encrypted", encrypted);
-    if (ipfs) {
-      ipfs.pubsub.publish(PUBSUB_TOPIC, uint8ArrayFromString(encrypted));
-      setText("");
+    const keyLabel = "my-ipfs-workspace";
+    const key = client.findKeyByLabel(keyLabel);
+    if (key) {
+      const encrypted = client.encrypt(text, key?.nameFingerprint);
+      if (ipfs) {
+        ipfs.pubsub.publish(
+          PUBSUB_TOPIC,
+          uint8ArrayFromString("cipher:" + encrypted)
+        );
+        setText("");
+      }
     }
   };
 
-  const decryptedMessages = messages.map((msg) => {
-    const label = "my-ipfs-workspace";
-    try {
-      const key = client.findKeyByLabel(label);
-      console.log("key", key);
-      const decrypted = client.decrypt(msg, key?.nameFingerprint);
-      return decrypted;
-    } catch (e) {
-      console.error(e);
-      return msg;
-    }
-  });
+  const decryptedMessages =
+    (messages &&
+      messages.map((msg) => {
+        const keyLabel = "my-ipfs-workspace";
+        if (msg.startsWith("cipher:")) {
+          try {
+            const key = client.findKeyByLabel(keyLabel);
+            if (key) {
+              const decrypted = client.decrypt(
+                msg.slice(7),
+                key?.nameFingerprint
+              );
+              return decrypted;
+            }
+          } catch (e) {
+            console.error(e);
+            return msg;
+          }
+        }
+        return msg;
+      })) ||
+    [];
 
   return (
     <div>
       <div>
-        <p className="read-the-docs">IPFS vxxx #yyyy</p>
+        <button onClick={() => onMessage(uint8ArrayFromString("coucou"))}>
+          setMessages
+        </button>
         <Dropzone onDrop={onDrop}>
           {({ getRootProps, getInputProps }) => (
             <section className="drop-zone">
@@ -136,7 +202,9 @@ function Sample2({}) {
         <br />
         <div style={{ fontSize: "1.5em" }}>
           {ipfs &&
-            decryptedMessages.map((message, i) => <li key={i}>{message}</li>)}
+            decryptedMessages.map((message, i) => (
+              <li key={i}>{message as string}</li>
+            ))}
         </div>
         <br />
         <br />
@@ -147,15 +215,19 @@ function Sample2({}) {
 
 function App() {
   return (
-    <div className="App">
-      <h1>e2esdk + IPFS demo</h1>
-      <E2ESDKClientProvider client={client}>
-        <IpfsProvider>
+    <E2ESDKClientProvider client={client}>
+      <IpfsProvider>
+        <div className="App">
+          <h1>e2esdk + IPFS demo</h1>
+          <IpfsStatus />
           <Sample2 />
-        </IpfsProvider>
-        <Devtools />
-      </E2ESDKClientProvider>
-    </div>
+        </div>
+      </IpfsProvider>
+      <br />
+      <br />
+      <br />
+      <Devtools />
+    </E2ESDKClientProvider>
   );
 }
 
