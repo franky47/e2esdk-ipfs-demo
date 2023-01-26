@@ -1,71 +1,27 @@
+import { useState, useRef, useEffect, useContext } from "react";
 import Dropzone, { DropzoneOptions } from "react-dropzone";
 import { fromString as uint8ArrayFromString } from "uint8arrays/from-string";
 import { toString as uint8ArrayToString } from "uint8arrays/to-string";
 
-import { Client } from "@socialgouv/e2esdk-client";
+import "@socialgouv/e2esdk-devtools";
 import { E2ESDKClientProvider } from "@socialgouv/e2esdk-react";
 
-import { usePubSub } from "./hooks/usePubSub";
-import { IpfsImage } from "./components/IpfsImage";
 import { IpfsProvider } from "./components/IpfsProvider";
-
-import "./App.css";
-import { useIpfs } from "./hooks/useIpfs";
-import { useState, useRef, useEffect, useContext, useCallback } from "react";
+import { IpfsStatus } from "./components/IpfsStatus";
+import { DevTools } from "./components/DevTools";
 import { ipfsContext } from "./ipfsContext";
-
 import { client } from "./e2esdk-client";
 
-import "@socialgouv/e2esdk-devtools";
-import { E2ESDKDevtoolsElement } from "@socialgouv/e2esdk-devtools";
-import { useE2ESDKClient } from "@socialgouv/e2esdk-react";
-
-export const Devtools = () => {
-  const client = useE2ESDKClient();
-  const ref = useRef<E2ESDKDevtoolsElement>(null);
-  useEffect(() => {
-    if (!ref.current) {
-      return;
-    }
-    ref.current.client = client;
-  }, [client]);
-  return <e2esdk-devtools ref={ref} theme="dark" />;
-};
+import "./App.css";
 
 const PUBSUB_TOPIC = "test-messages";
+const E2ESDK_KEY_LABEL = "my-ipfs-workspace";
 
-const IpfsStatus = () => {
+function Sample2() {
   const ipfs = useContext(ipfsContext);
-  return (
-    <div>
-      IPFS ready :{" "}
-      {ipfs?.isOnline() ? (
-        <span
-          style={{
-            display: "inline-block",
-            width: 10,
-            height: 10,
-            background: "green",
-          }}
-        />
-      ) : (
-        <span
-          style={{
-            display: "inline-block",
-            width: 10,
-            height: 10,
-            background: "red",
-          }}
-        />
-      )}
-    </div>
-  );
-};
-
-function Sample2({}) {
-  const ipfs = useContext(ipfsContext);
-  const [messages, setMessages] = useState<string[] | null>(null);
+  const [messages, setMessages] = useState<string[]>([]);
   const [text, setText] = useState("");
+  const [ready, setReady] = useState<Boolean>(false);
 
   const saveFileToIpfs = async (file: File) => {
     if (!ipfs) {
@@ -76,8 +32,9 @@ function Sample2({}) {
       content: file,
     };
 
+    // todo: encrypt
+
     const options = {
-      // wrapWithDirectory: true,
       progress: (prog: number) => console.log(`received: ${prog}`),
     };
 
@@ -92,32 +49,18 @@ function Sample2({}) {
 
   const onMessage = (data: any) => {
     const newText = uint8ArrayToString(data);
-    console.info(
-      `pubsub.received: ${newText} on topic ${PUBSUB_TOPIC}`,
-      messages && messages.length
-    );
-    setMessages([...(messages || []), newText]);
+    console.info(`pubsub.received: ${newText} on topic ${PUBSUB_TOPIC}`);
+    setMessages((messages) => [...messages, newText]);
   };
 
   useEffect(
     function () {
-      if (ipfs && !messages) {
-        console.log("subscribe", PUBSUB_TOPIC);
+      if (ipfs && !messages.length) {
+        console.info(`Subscribed to ${PUBSUB_TOPIC}`);
         ipfs.pubsub.subscribe(PUBSUB_TOPIC, (evt) => onMessage(evt.data));
-        setMessages([]);
+        setReady(true);
       }
       return () => {};
-      /*
-    const init = async () => {
-      if (ipfs) {
-        await ipfs.pubsub.subscribe(PUBSUB_TOPIC, onMessage);
-      }
-    };
-    if (ipfs && messages.length === 0) {
-      console.log("subscribe", PUBSUB_TOPIC);
-      init();
-    }
-    */
     },
     [ipfs, messages]
   );
@@ -133,12 +76,10 @@ function Sample2({}) {
   };
 
   const send = () => {
-    //const nameFingerprint
-    const keyLabel = "my-ipfs-workspace";
-    const key = client.findKeyByLabel(keyLabel);
+    const key = client.findKeyByLabel(E2ESDK_KEY_LABEL);
     if (key) {
       const encrypted = client.encrypt(text, key?.nameFingerprint);
-      if (ipfs) {
+      if (ipfs && ready) {
         ipfs.pubsub.publish(
           PUBSUB_TOPIC,
           uint8ArrayFromString("cipher:" + encrypted)
@@ -151,16 +92,11 @@ function Sample2({}) {
   const decryptedMessages =
     (messages &&
       messages.map((msg) => {
-        const keyLabel = "my-ipfs-workspace";
         if (msg.startsWith("cipher:")) {
           try {
-            const key = client.findKeyByLabel(keyLabel);
+            const key = client.findKeyByLabel(E2ESDK_KEY_LABEL);
             if (key) {
-              const decrypted = client.decrypt(
-                msg.slice(7),
-                key?.nameFingerprint
-              );
-              return decrypted;
+              return client.decrypt(msg.slice(7), key?.nameFingerprint);
             }
           } catch (e) {
             console.error(e);
@@ -196,7 +132,9 @@ function Sample2({}) {
           value={text}
         ></textarea>
         <br />
-        <button onClick={send}>Send</button>
+        <button disabled={!ready} onClick={send}>
+          Send
+        </button>
         <br />
         <br />
         <br />
@@ -226,7 +164,7 @@ function App() {
       <br />
       <br />
       <br />
-      <Devtools />
+      <DevTools />
     </E2ESDKClientProvider>
   );
 }

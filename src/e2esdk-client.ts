@@ -6,14 +6,15 @@ const params = qs.parse(document.location.hash);
 const serverURL = "https://e2esdk.dev.fabrique.social.gouv.fr";
 const serverPublicKey = "_XDQj6-paJAnpCp_pfBhGUUe6cA0MjLXsgAOgYDhCRI";
 
-const mainKeyStr = params.mainKey;
-const userId = params.userId;
+const mainKeyStr = params.mainKey as string;
+const userId = params.userId as string;
 
 export const client = new Client({
   serverURL: serverURL,
   serverPublicKey: serverPublicKey,
   handleNotifications: true,
 });
+
 const mainKey = client.decode(mainKeyStr);
 await client.sodium.ready;
 
