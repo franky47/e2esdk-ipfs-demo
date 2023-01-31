@@ -11,15 +11,17 @@
   "dependencies": {
     "@chainsafe/libp2p-gossipsub": "^6.0.0",
     "@socialgouv/e2esdk-client": "^1.0.0-beta.17",
-    "@socialgouv/e2esdk-devtools": "^1.0.0-beta.1",
+    "@socialgouv/e2esdk-devtools": "^1.0.0-beta.26",
     "@socialgouv/e2esdk-keygen": "1.0.0-beta.12",
     "@socialgouv/e2esdk-react": "^1.0.0-beta.17",
+    "@socialgouv/e2esdk-crypto": "^1.0.0-beta.12",
     "dot-prop": "^7.2.0",
     "ipfs-core": "^0.18.0",
     "query-string": "7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-dropzone": "^14.2.3"
+    "react-dropzone": "^14.2.3",
+    "zod": "^3.20.2"
   },
   "devDependencies": {
     "@types/react": "^18.0.26",

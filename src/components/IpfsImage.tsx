@@ -1,5 +1,9 @@
-import { IPFS } from "ipfs-core-types";
-import { useState, useEffect } from "react";
+import { Client } from '@socialgouv/e2esdk-client'
+import { concat, decryptFileContents } from '@socialgouv/e2esdk-crypto'
+import { useE2ESDKClient } from '@socialgouv/e2esdk-react'
+import { IPFS } from 'ipfs-core-types'
+import { useEffect, useState } from 'react'
+import { IpfsFileMetadataSchema } from '../schemas'
 
 /** Uses `URL.createObjectURL` free returned ObjectURL with `URL.RevokeObjectURL` when done with it.
  *
@@ -10,74 +14,61 @@ import { useState, useEffect } from "react";
  */
 async function loadImgURL(
   ipfs: IPFS,
-  cid: string,
-  mime: string,
-  limit = 1000000000
+  client: Client,
+  { cid, type, key }: IpfsFileMetadataSchema,
+  limit = 1_000_000_000
 ) {
-  if (cid == "" || cid == null || cid == undefined) {
-    return;
+  if (cid == '' || cid == null || cid == undefined) {
+    return
   }
-  const content = [];
+  const chunks = []
   for await (const chunk of ipfs.cat(cid, { length: limit })) {
-    content.push(chunk);
+    chunks.push(chunk)
   }
-  return URL.createObjectURL(new Blob(content, { type: mime }));
+  const content = concat(...chunks)
+  const cleartext = decryptFileContents(client.sodium, content, {
+    algorithm: 'secretBox',
+    key: client.decode(key),
+  })
+  return URL.createObjectURL(new Blob([cleartext], { type }))
 }
 
-export function IpfsImage({ ipfs, cid }: { ipfs: IPFS; cid: string }) {
-  const [data, setData] = useState<string | null>(null);
+type IpfsImageProps = {
+  ipfs: IPFS
+  metadata: IpfsFileMetadataSchema
+  nameFingerprint: string
+}
+
+export function IpfsImage({ ipfs, nameFingerprint, metadata }: IpfsImageProps) {
+  const client = useE2ESDKClient()
+  const [data, setData] = useState<string | null>(null)
   useEffect(() => {
-    let loaded = false;
+    let loaded = false
     async function loadImage() {
       try {
-        const imageData = await loadImgURL(ipfs, cid, "image/jpeg");
+        const imageData = await loadImgURL(ipfs, client, metadata)
         if (imageData) {
-          setData(imageData);
+          setData(imageData)
         }
       } catch (e) {
         //@ts-ignore
-        console.error("error loading image", cid, e.message);
+        console.error('error loading image', cid, e.message)
       }
     }
     if (ipfs && !loaded) {
-      loaded = true;
-      loadImage();
+      loaded = true
+      loadImage()
     }
-  }, [ipfs, cid]);
+  }, [ipfs, metadata, client, nameFingerprint])
   return (
-    (
-      <div>
-        <hr />
-        <b>{cid}</b>
-        <br />
-        {
-          <>
-            local IPFS:{" "}
-            <img
-              width={100}
-              style={{
-                border: "1px solid silver",
-                minWidth: 100,
-                minHeight: 100,
-              }}
-              src={data || "about:blank"}
-            />
-            <br />
-          </>
-        }
-        <>
-          ipfs.io http gateway:
-          <img
-            width={100}
-            style={{
-              border: "1px solid silver",
-              minWidth: 100,
-              minHeight: 100,
-            }}
-            src={`https://ipfs.io/ipfs/${cid}`}
-          />
-        </>
-      </div>
-    ) || null
-  );
+    <img
+      width={100}
+      style={{
+        border: '1px solid silver',
+        minWidth: 100,
+        minHeight: 100,
+      }}
+      src={data || 'about:blank'}
+    />
+  )
 }

@@ -693,7 +693,7 @@
   dependencies:
     "@chakra-ui/utils" "2.0.15"
 
-"@chakra-ui/react@^2.4.2":
+"@chakra-ui/react@^2.4.9":
   version "2.4.9"
   resolved "https://registry.yarnpkg.com/@chakra-ui/react/-/react-2.4.9.tgz#7c80c462aeaec7f1bd91ec6439940e3ef5c66ad9"
   integrity sha512-lY++xW+zhLp0zQr2Sf5phjYMIphOmjGV/o5A1oDQPrqwLJFm4mL2+eXvpAFrLnZoh00qa4iBqarxJCW7qpHeiA==
@@ -2060,23 +2060,24 @@
     libsodium-wrappers "^0.7.10"
     zod "^3.20.2"
 
-"@socialgouv/e2esdk-devtools@^1.0.0-beta.1":
-  version "1.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-devtools/-/e2esdk-devtools-1.0.0-beta.1.tgz#499cd35f0528acb7ab6488639760be6d8bc40829"
-  integrity sha512-npWTuDAhIyhdv+us4Fkg1F5khLerLx2G4oEAye/IhfiUy2NBwV5jPeoG9cYVlxaeO/+KSQ37MVlWi+DB88HNaQ==
+"@socialgouv/e2esdk-devtools@^1.0.0-beta.26":
+  version "1.0.0-beta.26"
+  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-devtools/-/e2esdk-devtools-1.0.0-beta.26.tgz#96b1f1abd459fcfc90267f9156f9e6ce35fd12b2"
+  integrity sha512-6f0t/ElDHqmwgEHNuLnOIQdtJMk64C6XZ7ZIcEsLsZCr2gFvVHYRaVgu0/24ZYXGmsHUAOiXnL06AkaTisie0g==
   dependencies:
-    "@chakra-ui/react" "^2.4.2"
+    "@chakra-ui/react" "^2.4.9"
     "@emotion/cache" "^11.10.5"
     "@emotion/react" "^11.10.5"
     "@emotion/styled" "^11.10.5"
-    "@socialgouv/e2esdk-react" "1.0.0-beta.1"
-    "@tanstack/react-query" "^4.18.0"
-    "@tanstack/react-query-devtools" "^4.18.0"
-    framer-motion "^7.6.15"
+    "@socialgouv/e2esdk-crypto" "^1.0.0-beta.12"
+    "@socialgouv/e2esdk-react" "^1.0.0-beta.17"
+    "@tanstack/react-query" "^4.22.0"
+    "@tanstack/react-query-devtools" "^4.22.0"
+    framer-motion "^8.4.6"
     react-focus-lock "^2.9.2"
-    react-hook-form "^7.40.0"
+    react-hook-form "^7.42.1"
     react-icons "^4.7.1"
-    zod "^3.19.1"
+    zod "^3.20.2"
 
 "@socialgouv/e2esdk-keygen@1.0.0-beta.12":
   version "1.0.0-beta.12"
@@ -2086,11 +2087,6 @@
     "@socialgouv/e2esdk-crypto" "^1.0.0-beta.12"
     zod "^3.20.2"
     zx "^7.1.1"
-
-"@socialgouv/e2esdk-react@1.0.0-beta.1":
-  version "1.0.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@socialgouv/e2esdk-react/-/e2esdk-react-1.0.0-beta.1.tgz#3ae973e1885797de9fa3107b2e06ef1efcddf329"
-  integrity sha512-ma1XYGxTIlXC9V0hUyIl0BtSCJgQgmT/T8EP6b2CUY/bPxFqXdPcYuUEc14yrcvq8QpN1i8f2rNgs/hJqR7DkA==
 
 "@socialgouv/e2esdk-react@^1.0.0-beta.17":
   version "1.0.0-beta.17"
@@ -2296,26 +2292,26 @@
   dependencies:
     remove-accents "0.4.2"
 
-"@tanstack/query-core@4.22.4":
-  version "4.22.4"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.22.4.tgz#aca622d2f8800a147ece5520d956a076ab92f0ea"
-  integrity sha512-t79CMwlbBnj+yL82tEcmRN93bL4U3pae2ota4t5NN2z3cIeWw74pzdWrKRwOfTvLcd+b30tC+ciDlfYOKFPGUw==
+"@tanstack/query-core@4.24.4":
+  version "4.24.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.24.4.tgz#6fe78777286fdd805ac319c7c743df4935e18ee2"
+  integrity sha512-9dqjv9eeB6VHN7lD3cLo16ZAjfjCsdXetSAD5+VyKqLUvcKTL0CklGQRJu+bWzdrS69R6Ea4UZo8obHYZnG6aA==
 
-"@tanstack/react-query-devtools@^4.18.0":
-  version "4.23.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-4.23.0.tgz#f4a19991ee2bdd6f7355863e86dad75e808fa08c"
-  integrity sha512-bSFSd1OvYti9FNsLptlPu5ck1NXUbY595uWvW8U90pii1rrVPMW7mnFTxwr3XZh1X71DJAiYd81XWIPvscyVPA==
+"@tanstack/react-query-devtools@^4.22.0":
+  version "4.24.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-4.24.4.tgz#5f0bd45f929950ff2b56a1a3ed18a006780e3495"
+  integrity sha512-4mldcR99QDX8k94I+STM9gPsYF+FDAD2EQJvHtxR2HrDNegbfmY474xuW0QUZaNW/vJi09Gak6b6Vy2INWhL6w==
   dependencies:
     "@tanstack/match-sorter-utils" "^8.7.0"
     superjson "^1.10.0"
     use-sync-external-store "^1.2.0"
 
-"@tanstack/react-query@^4.18.0":
-  version "4.23.0"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.23.0.tgz#0b9e14269a48cf5a4ffe46c8525cdb9df2ebd9cf"
-  integrity sha512-cfQsrecZQjYYueiow4WcK8ItokXJnv+b2OrK8Lf5kF7lM9uCo1ilyygFB8wo4MfxchUBVM6Cs8wq4Ed7fouwkA==
+"@tanstack/react-query@^4.22.0":
+  version "4.24.4"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.24.4.tgz#79e892edac33d8aa394795390c0f79e4a8c9be4d"
+  integrity sha512-RpaS/3T/a3pHuZJbIAzAYRu+1nkp+/enr9hfRXDS/mojwx567UiMksoqW4wUFWlwIvWTXyhot2nbIipTKEg55Q==
   dependencies:
-    "@tanstack/query-core" "4.22.4"
+    "@tanstack/query-core" "4.24.4"
     use-sync-external-store "^1.2.0"
 
 "@types/dns-packet@*":
@@ -3100,14 +3096,14 @@ formdata-polyfill@^4.0.10:
   dependencies:
     fetch-blob "^3.1.2"
 
-framer-motion@^7.6.15:
-  version "7.10.3"
-  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-7.10.3.tgz#8b23f50bbc1ee8c830c869c5398e457d5272feb5"
-  integrity sha512-k2ccYeZNSpPg//HTaqrU+4pRq9f9ZpaaN7rr0+Rx5zA4wZLbk547wtDzge2db1sB+1mnJ6r59P4xb+aEIi/W+w==
+framer-motion@^8.4.6:
+  version "8.5.5"
+  resolved "https://registry.yarnpkg.com/framer-motion/-/framer-motion-8.5.5.tgz#e30e9087bfc9b3367459f83b4d9fe7efd5acade6"
+  integrity sha512-5IDx5bxkjWHWUF3CVJoSyUVOtrbAxtzYBBowRE2uYI/6VYhkEBD+rbTHEGuUmbGHRj6YqqSfoG7Aa1cLyWCrBA==
   dependencies:
     "@motionone/dom" "^10.15.3"
     hey-listen "^1.0.8"
-    tslib "2.4.0"
+    tslib "^2.4.0"
   optionalDependencies:
     "@emotion/is-prop-valid" "^0.8.2"
 
@@ -4683,10 +4679,10 @@ react-focus-lock@^2.9.2:
     use-callback-ref "^1.3.0"
     use-sidecar "^1.1.2"
 
-react-hook-form@^7.40.0:
-  version "7.42.1"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.42.1.tgz#c6396ca684716d89abc1c7e64343badfd30c56c6"
-  integrity sha512-2UIGqwMZksd5HS55crTT1ATLTr0rAI4jS7yVuqTaoRVDhY2Qc4IyjskCmpnmdYqUNOYFy04vW253tb2JRVh+IQ==
+react-hook-form@^7.42.1:
+  version "7.43.0"
+  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.43.0.tgz#d0c19b5c4ec561fbf8d652869ccb513c11c772e7"
+  integrity sha512-/rVEz7T0gLdSFwPqutJ1kn2e0sQNyb9ci/hmwEYr2YG0KF/LSuRLvNrf9QWJM+gj88CjDpDW5Bh/1AD7B2+z9Q==
 
 react-icons@^4.7.1:
   version "4.7.1"
@@ -5260,7 +5256,7 @@ yocto-queue@^1.0.0:
   resolved "https://registry.yarnpkg.com/yocto-queue/-/yocto-queue-1.0.0.tgz#7f816433fb2cbc511ec8bf7d263c3b58a1a3c251"
   integrity sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==
 
-zod@^3.19.1, zod@^3.20.2:
+zod@^3.20.2:
   version "3.20.2"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.20.2.tgz#068606642c8f51b3333981f91c0a8ab37dfc2807"
   integrity sha512-1MzNQdAvO+54H+EaK5YpyEy0T+Ejo/7YLHS93G3RnYWh5gaotGHwGeN/ZO687qEDU2y4CdStQYXVHIgrUl5UVQ==
